@@ -58,6 +58,8 @@ def solve(H):
         try:
             H_cp = H.copy()
             H_cp.remove_node(least_weight)
+            if not nx.is_connected(H_cp):
+                break
             nx.shortest_path(H_cp, 0, num_nodes - 1, weight="weight")
             H.remove_node(least_weight)
             c.append(least_weight)
@@ -71,6 +73,8 @@ def solve(H):
         try:
             H_cp = H.copy()
             H_cp.remove_edge(min_edge_src, min_edge_dest)
+            if not nx.is_connected(H_cp):
+                break
             nx.shortest_path(H_cp, 0, num_nodes - 1, weight="weight")
             H.remove_edge(min_edge_src, min_edge_dest)
             k.append((min_edge_src, min_edge_dest))
@@ -94,9 +98,9 @@ def solve(H):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
-    inputs = glob.glob('inputs/small/*')
+    inputs = glob.glob('inputs/large/*')
     for input_path in inputs:
-        output_path = 'outputs/small/' + basename(normpath(input_path))[:-3] + '.out'
+        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
         G = read_input_file(input_path)
         c, k = solve(G)
         assert is_valid_solution(G, c, k)
