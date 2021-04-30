@@ -55,31 +55,23 @@ def solve(H):
             break
         find_sum_weights = lambda x: sum([H.edges[x, i]["weight"] for i in H.adj[x] if i != 0 and i != num_nodes - 1])
         least_weight = min(curr_shortest[1:-1], key=find_sum_weights)
-        try:
-            H_cp = H.copy()
-            H_cp.remove_node(least_weight)
-            if not nx.is_connected(H_cp):
-                break
-            nx.shortest_path(H_cp, 0, num_nodes - 1, weight="weight")
-            H.remove_node(least_weight)
-            c.append(least_weight)
-        except nx.NetworkXNoPath:
+        H_cp = H.copy()
+        H_cp.remove_node(least_weight)
+        if not nx.is_connected(H_cp):
             break
+        H.remove_node(least_weight)
+        c.append(least_weight)
 
     for _ in range(k_num):
         curr_shortest = nx.shortest_path(H, 0, num_nodes - 1, weight="weight")
         pg = nx.path_graph(curr_shortest)
         min_edge_src, min_edge_dest = min(pg.edges, key=lambda x: H.edges[x[0], x[1]]["weight"])
-        try:
-            H_cp = H.copy()
-            H_cp.remove_edge(min_edge_src, min_edge_dest)
-            if not nx.is_connected(H_cp):
-                break
-            nx.shortest_path(H_cp, 0, num_nodes - 1, weight="weight")
-            H.remove_edge(min_edge_src, min_edge_dest)
-            k.append((min_edge_src, min_edge_dest))
-        except nx.NetworkXNoPath:
+        H_cp = H.copy()
+        H_cp.remove_edge(min_edge_src, min_edge_dest)
+        if not nx.is_connected(H_cp):
             break
+        H.remove_edge(min_edge_src, min_edge_dest)
+        k.append((min_edge_src, min_edge_dest))
     return c, k
 
 
