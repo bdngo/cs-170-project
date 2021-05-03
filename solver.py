@@ -5,6 +5,7 @@ import sys
 from os.path import basename, normpath
 import glob
 import random
+import time
 
 
 def solve(H):
@@ -50,6 +51,7 @@ def solve(H):
         c.append(to_rm)
         c_num -= 1
         seen_nodes.clear()
+        best_score = -float("inf")
 
     best_score = -float("inf")
     seen_edges = []
@@ -74,6 +76,7 @@ def solve(H):
         k.append((src_rm, dst_rm))
         k_num -= 1
         seen_edges.clear()
+        best_score = -float("inf")
 
     return c, k
 
@@ -95,6 +98,8 @@ def solve(H):
 if __name__ == '__main__':
     try:
         inputs = glob.glob(f'inputs/{sys.argv[1]}/*')
+        scores = []
+        start = time.time()
         for input_path in inputs:
             output_path = f'outputs/{sys.argv[1]}/' + basename(normpath(input_path))[:-3] + '.out'
             G = read_input_file(input_path)
@@ -102,5 +107,8 @@ if __name__ == '__main__':
             assert is_valid_solution(G, c, k)
             distance = calculate_score(G, c, k)
             write_output_file(G, c, k, output_path)
+            scores.append(distance)
+        end = time.time()
+        print(f"Elapsed: {end - start} s\nMaximum score: {max(scores)}\nMinimum score: {min(scores)}\nAverage score: {sum(scores) / len(scores)}")
     except IndexError:
         print("Empty size argument")
