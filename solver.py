@@ -26,54 +26,17 @@ def solve(H):
     elif num_nodes <= 100:
         c_num, k_num = 5, 100
 
-    # for _ in range(c_num):
-    #     most_connected = sorted(list(H.nodes)[1:-1], key=lambda x: H.degree[x], reverse=True)
-    #     for i in most_connected:
-    #         H_copy = H.copy()
-    #         H_copy.remove_node(i)
-    #         if is_connected(H_copy):
-    #             node_to_rm = i
-    #             break
-    #     H.remove_node(node_to_rm)
-    #     c.append(node_to_rm)
-
-    # for _ in range(k_num):
-    #     most_connected = sorted(list(H.nodes)[1:-1], key=lambda x: H.degree[x], reverse=True)
-    #     for i in most_connected:
-    #         H_copy = H.copy()
-    #         adj_to_mc = [j for j in H_copy.adj[i] if j != 0 and j != num_nodes - 1]
-    #         dest_to_rm = min(adj_to_mc, key=lambda x: H_copy.edges[x, i]["weight"])
-    #         H_copy.remove_edge(i, dest_to_rm)
-    #         if is_connected(H_copy):
-    #             src_to_rm = i
-    #             break
-    #     H.remove_edge(src_to_rm, dest_to_rm)
-    #     k.append((src_to_rm, dest_to_rm))
-    for _ in range(c_num):
-        curr_shortest = nx.shortest_path(H, 0, num_nodes - 1, weight="weight")
-        if len(curr_shortest) == 2:
-            break
-        find_sum_weights = lambda x: sum([H.edges[x, i]["weight"] for i in H.adj[x] if i != 0 and i != num_nodes - 1])
-        least_weight = min(curr_shortest[1:-1], key=find_sum_weights)
-        H_cp = H.copy()
-        H_cp.remove_node(least_weight)
-        if not nx.is_connected(H_cp):
-            break
-        H.remove_node(least_weight)
-        c.append(least_weight)
-
-    for _ in range(k_num):
-        curr_shortest = nx.shortest_path(H, 0, num_nodes - 1, weight="weight")
-        pg = nx.path_graph(curr_shortest)
-        min_edge_src, min_edge_dest = min(pg.edges, key=lambda x: H.edges[x[0], x[1]]["weight"])
-        H_cp = H.copy()
-        H_cp.remove_edge(min_edge_src, min_edge_dest)
-        if not nx.is_connected(H_cp):
-            break
-        H.remove_edge(min_edge_src, min_edge_dest)
-        k.append((min_edge_src, min_edge_dest))
+    k = H.edges
+    J = nx.empty_graph()
+    num_edges_deleted = len(k)
+    edges = sorted(H.edges, key=lambda x: H.edges[x[0], x[1]]["weight"])
+    while not nx.is_empty(J) and not nx.is_connected(J) and num_edges_deleted > k_num:
+        edge = edges.pop()
+        J.add_edge(edge)
+        k.remove(edge)
+        num_edges
     return c, k
-
+    
 
 # Here's an example of how to run your solver.
 
