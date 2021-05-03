@@ -4,6 +4,7 @@ from utils import is_valid_solution, calculate_score
 import sys
 from os.path import basename, normpath
 import glob
+import random
 
 
 def solve(H):
@@ -25,29 +26,39 @@ def solve(H):
     elif num_nodes <= 100:
         c_num, k_num = 5, 100
 
-    for _ in range(c_num):
-        curr_shortest = nx.shortest_path(H, 0, num_nodes - 1, weight="weight")
+    node_ctr = 0
+    while c_num > 0:
+        if node_ctr > len(H.nodes):
+            break
+        H_cp = H.copy()
+        curr_shortest = nx.shortest_path(H_cp, 0, num_nodes - 1)
         if len(curr_shortest) == 2:
             break
-        find_sum_weights = lambda x: sum([H.edges[x, i]["weight"] for i in H.adj[x] if i != 0 and i != num_nodes - 1])
-        least_weight = min(curr_shortest[1:-1], key=find_sum_weights)
-        H_cp = H.copy()
-        H_cp.remove_node(least_weight)
+        to_rm = random.choice(curr_shortest[1:-1])
+        H_cp.remove_node(to_rm)
         if not nx.is_connected(H_cp):
-            break
-        H.remove_node(least_weight)
-        c.append(least_weight)
+            node_ctr += 1
+            continue
+        H.remove_node(to_rm)
+        c.append(to_rm)
+        c_num -= 1
 
-    for _ in range(k_num):
-        curr_shortest = nx.shortest_path(H, 0, num_nodes - 1, weight="weight")
-        pg = nx.path_graph(curr_shortest)
-        min_edge_src, min_edge_dest = min(pg.edges, key=lambda x: H.edges[x[0], x[1]]["weight"])
-        H_cp = H.copy()
-        H_cp.remove_edge(min_edge_src, min_edge_dest)
-        if not nx.is_connected(H_cp):
+    edge_ctr = 0
+    while k_num > 0:
+        if edge_ctr > len(H.edges):
             break
-        H.remove_edge(min_edge_src, min_edge_dest)
-        k.append((min_edge_src, min_edge_dest))
+        H_cp = H.copy()
+        curr_shortest = nx.shortest_path(H_cp, 0, num_nodes - 1)
+        pg = nx.path_graph(curr_shortest)
+        src_rm, dst_rm = random.choice(list(pg.edges))
+        H_cp.remove_edge(src_rm, dst_rm)
+        if not nx.is_connected(H_cp):
+            edge_ctr += 1
+            continue
+        H.remove_edge(src_rm, dst_rm)
+        k.append((src_rm, dst_rm))
+        k_num -= 1
+
     return c, k
 
 
