@@ -26,29 +26,6 @@ def solve(H):
     elif num_nodes <= 100:
         c_num, k_num = 5, 100
 
-    # for _ in range(c_num):
-    #     most_connected = sorted(list(H.nodes)[1:-1], key=lambda x: H.degree[x], reverse=True)
-    #     for i in most_connected:
-    #         H_copy = H.copy()
-    #         H_copy.remove_node(i)
-    #         if is_connected(H_copy):
-    #             node_to_rm = i
-    #             break
-    #     H.remove_node(node_to_rm)
-    #     c.append(node_to_rm)
-
-    # for _ in range(k_num):
-    #     most_connected = sorted(list(H.nodes)[1:-1], key=lambda x: H.degree[x], reverse=True)
-    #     for i in most_connected:
-    #         H_copy = H.copy()
-    #         adj_to_mc = [j for j in H_copy.adj[i] if j != 0 and j != num_nodes - 1]
-    #         dest_to_rm = min(adj_to_mc, key=lambda x: H_copy.edges[x, i]["weight"])
-    #         H_copy.remove_edge(i, dest_to_rm)
-    #         if is_connected(H_copy):
-    #             src_to_rm = i
-    #             break
-    #     H.remove_edge(src_to_rm, dest_to_rm)
-    #     k.append((src_to_rm, dest_to_rm))
     for _ in range(c_num):
         curr_shortest = nx.shortest_path(H, 0, num_nodes - 1, weight="weight")
         if len(curr_shortest) == 2:
@@ -90,11 +67,14 @@ def solve(H):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
-    inputs = glob.glob('inputs/large/*')
-    for input_path in inputs:
-        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
-        G = read_input_file(input_path)
-        c, k = solve(G)
-        assert is_valid_solution(G, c, k)
-        distance = calculate_score(G, c, k)
-        write_output_file(G, c, k, output_path)
+    try:
+        inputs = glob.glob(f'inputs/{sys.argv[1]}/*')
+        for input_path in inputs:
+            output_path = f'outputs/{sys.argv[1]}/' + basename(normpath(input_path))[:-3] + '.out'
+            G = read_input_file(input_path)
+            c, k = solve(G)
+            assert is_valid_solution(G, c, k)
+            distance = calculate_score(G, c, k)
+            write_output_file(G, c, k, output_path)
+    except IndexError:
+        print("Empty size argument")
