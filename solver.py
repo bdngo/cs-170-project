@@ -26,38 +26,54 @@ def solve(H):
     elif num_nodes <= 100:
         c_num, k_num = 5, 100
 
-    node_ctr = 0
+    best_score = -float("inf")
+    seen_nodes = []
     while c_num > 0:
-        if node_ctr > len(H.nodes):
-            break
         H_cp = H.copy()
-        curr_shortest = nx.shortest_path(H_cp, 0, num_nodes - 1)
-        if len(curr_shortest) == 2:
+        curr_shortest = nx.shortest_path(H_cp, 0, num_nodes - 1, weight="weight")
+        if len(curr_shortest) == 2:  # Exit if shortest path is only 1 edge
             break
-        to_rm = random.choice(curr_shortest[1:-1])
+        not_seen_nodes = list(set(curr_shortest[1:-1]) - set(seen_nodes))
+        if len(not_seen_nodes) == 0:  # Exit if we have seen all nodes
+            break
+        to_rm = random.choice(not_seen_nodes)
         H_cp.remove_node(to_rm)
-        if not nx.is_connected(H_cp):
-            node_ctr += 1
+        if not nx.is_connected(H_cp): # Reject and pick new node if graph is disconnected
+            seen_nodes.append(to_rm)
             continue
+        curr_score = nx.shortest_path_length(H_cp, 0, num_nodes - 1, weight="weight") 
+        if curr_score < best_score: # Reject and pick new node if score is lower
+            seen_nodes.append(to_rm)
+            continue
+        best_score = curr_score
         H.remove_node(to_rm)
         c.append(to_rm)
         c_num -= 1
+        seen_nodes.clear()
 
-    edge_ctr = 0
+    best_score = -float("inf")
+    seen_edges = []
     while k_num > 0:
-        if edge_ctr > len(H.edges):
-            break
         H_cp = H.copy()
-        curr_shortest = nx.shortest_path(H_cp, 0, num_nodes - 1)
+        curr_shortest = nx.shortest_path(H_cp, 0, num_nodes - 1, weight="weight")
         pg = nx.path_graph(curr_shortest)
-        src_rm, dst_rm = random.choice(list(pg.edges))
+        not_seen_edges = list(set(pg.edges) - set(seen_edges))
+        if len(not_seen_edges) == 0: # Exit if we have seen all edges
+            break
+        src_rm, dst_rm = random.choice(list(not_seen_edges))
         H_cp.remove_edge(src_rm, dst_rm)
-        if not nx.is_connected(H_cp):
-            edge_ctr += 1
+        if not nx.is_connected(H_cp): # Reject and pick new edge if graph is disconnected
+            seen_edges.append((src_rm, dst_rm))
             continue
+        curr_score = nx.shortest_path_length(H_cp, 0, num_nodes - 1, weight="weight")
+        if curr_score < best_score: # Reject and pick new edge if score is lower
+            seen_edges.append((src_rm, dst_rm))
+            continue
+        best_score = curr_score
         H.remove_edge(src_rm, dst_rm)
         k.append((src_rm, dst_rm))
         k_num -= 1
+        seen_edges.clear()
 
     return c, k
 
