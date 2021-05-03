@@ -1,6 +1,5 @@
 import networkx as nx
-from networkx.algorithms.components.connected import is_connected
-from parse import read_input_file, read_output_file, write_output_file
+from parse import read_input_file, write_output_file
 from utils import is_valid_solution, calculate_score
 import sys
 from os.path import basename, normpath
