@@ -1,5 +1,15 @@
 # CS 170 Project Spring 2021
 
+## How to Use
+
+The solver can be run using the following command:
+```python
+python3 solver.py [small/medium/large]
+```
+where the size is specified as an argument.
+
+## Spec
+
 Take a look at the project spec before you get started!
 
 Requirements:
