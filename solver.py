@@ -96,19 +96,16 @@ def solve(H):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
-    try:
-        inputs = glob.glob(f'inputs/{sys.argv[1]}/*')
-        scores = []
-        start = time.time()
-        for input_path in inputs:
-            output_path = f'outputs/{sys.argv[1]}/' + basename(normpath(input_path))[:-3] + '.out'
-            G = read_input_file(input_path)
-            c, k = solve(G)
-            assert is_valid_solution(G, c, k)
-            distance = calculate_score(G, c, k)
-            write_output_file(G, c, k, output_path)
-            scores.append(distance)
-        end = time.time()
-        print(f"Elapsed: {end - start} s\nMaximum score: {max(scores)}\nMinimum score: {min(scores)}\nAverage score: {sum(scores) / len(scores)}")
-    except IndexError:
-        print("Empty size argument")
+    inputs = glob.glob(f'inputs/{sys.argv[1]}/*')
+    scores = []
+    start = time.time()
+    for input_path in inputs:
+        output_path = f'outputs/{sys.argv[1]}/' + basename(normpath(input_path))[:-3] + '.out'
+        G = read_input_file(input_path)
+        c, k = solve(G)
+        assert is_valid_solution(G, c, k)
+        distance = calculate_score(G, c, k)
+        write_output_file(G, c, k, output_path)
+        scores.append(distance)
+    end = time.time()
+    print(f"Elapsed: {end - start} s\nMaximum score: {max(scores)}\nMinimum score: {min(scores)}\nAverage score: {sum(scores) / len(scores)}")
